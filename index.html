@@ -1,0 +1,1161 @@
+<!DOCTYPE html>
+<html lang="fil">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Waste Segregation Record System – DepEd</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Baloo+2:wght@400;600;700;800&family=Nunito:wght@400;600;700;800;900&display=swap');
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --green:#2e7d32;--green-l:#66bb6a;--green-bg:#e8f5e9;--green-d:#1b5e20;
+  --blue:#1565c0;--blue-l:#42a5f5;--blue-bg:#e3f2fd;
+  --red:#c62828;--red-l:#ef5350;--red-bg:#ffebee;
+  --yellow:#f57f17;--yellow-l:#ffca28;--yellow-bg:#fffde7;
+  --purple:#6a1b9a;--purple-l:#ab47bc;--purple-bg:#f3e5f5;
+  --orange:#e65100;--orange-l:#ff8a65;--orange-bg:#fbe9e7;
+  --teal:#00695c;--teal-l:#4db6ac;--teal-bg:#e0f2f1;
+  --bg:#f4f6f9;--card:#fff;--border:#e0e0e0;
+  --text:#1a1a2e;--sub:#6b7280;
+  --radius:16px;--shadow:0 4px 24px rgba(0,0,0,0.09);
+}
+body{font-family:'Nunito',sans-serif;background:var(--bg);color:var(--text);min-height:100vh;}
+.layout{display:flex;min-height:100vh;}
+
+/* ── SIDEBAR ── */
+.sidebar{width:248px;flex-shrink:0;background:linear-gradient(180deg,var(--green-d) 0%,#2e7d32 60%,#388e3c 100%);color:white;display:flex;flex-direction:column;position:fixed;top:0;left:0;bottom:0;z-index:50;overflow-y:auto;}
+.sidebar-logo{padding:22px 20px 18px;border-bottom:1px solid rgba(255,255,255,0.13);}
+.sidebar-logo .seal{font-size:2rem;margin-bottom:6px;}
+.sidebar-logo h2{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;line-height:1.3;}
+.sidebar-logo p{font-size:0.62rem;opacity:0.65;margin-top:2px;letter-spacing:0.04em;}
+.nav-group{padding:14px 10px 4px;font-size:0.58rem;letter-spacing:0.18em;text-transform:uppercase;opacity:0.45;font-weight:800;}
+.nav-item{display:flex;align-items:center;gap:10px;padding:10px 16px;margin:1px 8px;border-radius:10px;cursor:pointer;font-size:0.84rem;font-weight:700;transition:background 0.15s,opacity 0.15s;opacity:0.72;}
+.nav-item:hover{background:rgba(255,255,255,0.13);opacity:1;}
+.nav-item.active{background:rgba(255,255,255,0.22);opacity:1;box-shadow:inset 3px 0 0 var(--yellow-l);}
+.nav-item .ni{font-size:1.05rem;width:22px;text-align:center;flex-shrink:0;}
+.sidebar-footer{margin-top:auto;padding:14px 16px;border-top:1px solid rgba(255,255,255,0.1);font-size:0.6rem;opacity:0.38;text-align:center;line-height:1.7;}
+
+/* ── MAIN ── */
+.main{margin-left:248px;flex:1;display:flex;flex-direction:column;}
+.topbar{background:var(--card);border-bottom:1px solid var(--border);padding:13px 28px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:40;box-shadow:0 2px 8px rgba(0,0,0,0.05);}
+.topbar-title{font-family:'Baloo 2',cursive;font-size:1.12rem;font-weight:800;color:var(--green);}
+.date-badge{background:var(--green-bg);color:var(--green);padding:5px 14px;border-radius:99px;font-size:0.73rem;font-weight:700;}
+
+/* ── PAGES ── */
+.page{display:none;padding:24px 28px 48px;}
+.page.active{display:block;}
+
+/* ── TABS (inside Mag-record page) ── */
+.tab-bar{display:flex;gap:0;background:var(--bg);border-radius:12px;padding:4px;margin-bottom:22px;width:fit-content;border:1.5px solid var(--border);}
+.tab-btn{padding:9px 22px;border-radius:9px;border:none;background:transparent;font-family:'Nunito',sans-serif;font-size:0.84rem;font-weight:800;cursor:pointer;color:var(--sub);transition:all 0.18s;display:flex;align-items:center;gap:7px;}
+.tab-btn.active{background:white;color:var(--green);box-shadow:0 2px 8px rgba(0,0,0,0.1);}
+.tab-btn:hover:not(.active){color:var(--text);}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── STAT CARDS ── */
+.stat-row{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:22px;}
+.stat-card{background:var(--card);border-radius:var(--radius);padding:18px 18px 14px;box-shadow:var(--shadow);border-left:4px solid;transition:transform 0.18s;}
+.stat-card:hover{transform:translateY(-3px);}
+.stat-card.green{border-color:var(--green-l);}.stat-card.blue{border-color:var(--blue-l);}.stat-card.yellow{border-color:var(--yellow-l);}.stat-card.red{border-color:var(--red-l);}.stat-card.purple{border-color:var(--purple-l);}.stat-card.teal{border-color:var(--teal-l);}
+.stat-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px;}
+.stat-label{font-size:0.68rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--sub);font-weight:700;}
+.stat-icon{font-size:1.4rem;}
+.stat-val{font-family:'Baloo 2',cursive;font-size:2rem;font-weight:800;line-height:1;}
+.stat-unit{font-size:0.68rem;color:var(--sub);margin-top:2px;font-weight:600;}
+.stat-card.green .stat-val{color:var(--green);}.stat-card.blue .stat-val{color:var(--blue);}.stat-card.yellow .stat-val{color:var(--yellow);}.stat-card.red .stat-val{color:var(--red);}.stat-card.purple .stat-val{color:var(--purple);}.stat-card.teal .stat-val{color:var(--teal);}
+
+/* ── SECTION CARD ── */
+.sc{background:var(--card);border-radius:var(--radius);box-shadow:var(--shadow);margin-bottom:20px;}
+.sc-head{padding:14px 20px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:10px;}
+.sc-head h3{font-family:'Baloo 2',cursive;font-size:0.98rem;font-weight:800;display:flex;align-items:center;gap:8px;}
+.sc-body{padding:20px;}
+
+/* ── FORM ── */
+.fg{display:flex;flex-direction:column;gap:4px;}
+.fg label{font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--sub);}
+.fg input,.fg select,.fg textarea{border:1.5px solid var(--border);border-radius:10px;padding:9px 12px;font-family:'Nunito',sans-serif;font-size:0.85rem;color:var(--text);background:var(--bg);transition:border-color 0.15s,box-shadow 0.15s;outline:none;}
+.fg input:focus,.fg select:focus,.fg textarea:focus{border-color:var(--green);box-shadow:0 0 0 3px rgba(46,125,50,0.1);}
+.fg input:disabled,.fg select:disabled{opacity:0.55;cursor:not-allowed;}
+
+/* ── BIN INPUTS ── */
+.bin-inputs{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin:16px 0;}
+.bic{border-radius:12px;padding:14px 10px;text-align:center;border:2px solid;}
+.bic.green{background:var(--green-bg);border-color:var(--green-l);}.bic.blue{background:var(--blue-bg);border-color:var(--blue-l);}.bic.yellow{background:var(--yellow-bg);border-color:var(--yellow-l);}.bic.red{background:var(--red-bg);border-color:var(--red-l);}
+.bic .bi{font-size:1.7rem;margin-bottom:5px;}.bic .bn{font-size:0.65rem;font-weight:800;margin-bottom:7px;text-transform:uppercase;letter-spacing:0.05em;}
+.bic.green .bn{color:var(--green);}.bic.blue .bn{color:var(--blue);}.bic.yellow .bn{color:var(--yellow);}.bic.red .bn{color:var(--red);}
+.bic input{width:100%;border:1.5px solid;border-radius:8px;padding:7px;text-align:center;font-size:1rem;font-weight:800;font-family:'Nunito',sans-serif;outline:none;background:white;}
+.bic.green input{border-color:var(--green);color:var(--green);}.bic.blue input{border-color:var(--blue);color:var(--blue);}.bic.yellow input{border-color:var(--yellow);color:var(--yellow);}.bic.red input{border-color:var(--red);color:var(--red);}
+.bic .bu{font-size:0.62rem;color:var(--sub);margin-top:4px;font-weight:600;}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 20px;border-radius:99px;font-family:'Nunito',sans-serif;font-size:0.82rem;font-weight:800;border:none;cursor:pointer;transition:all 0.18s;}
+.btn-primary{background:var(--green);color:white;box-shadow:0 4px 12px rgba(46,125,50,0.28);}
+.btn-primary:hover{background:var(--green-d);transform:translateY(-1px);box-shadow:0 6px 18px rgba(46,125,50,0.38);}
+.btn-teal{background:var(--teal);color:white;box-shadow:0 4px 12px rgba(0,105,92,0.22);}
+.btn-teal:hover{background:#004d40;transform:translateY(-1px);}
+.btn-purple{background:var(--purple);color:white;box-shadow:0 4px 12px rgba(106,27,154,0.22);}
+.btn-purple:hover{background:#4a148c;transform:translateY(-1px);}
+.btn-outline{background:transparent;border:1.5px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg);}
+.btn-danger{background:var(--red-bg);color:var(--red);border:1.5px solid var(--red-l);}
+.btn-danger:hover{background:var(--red);color:white;}
+.btn-edit{background:var(--blue-bg);color:var(--blue);border:1.5px solid var(--blue-l);}
+.btn-edit:hover{background:var(--blue);color:white;}
+.btn-sm{padding:5px 13px;font-size:0.73rem;}
+
+/* ── TABLE ── */
+.tw{overflow-x:auto;}
+table{width:100%;border-collapse:collapse;font-size:0.82rem;}
+thead th{padding:10px 14px;text-align:left;background:var(--bg);font-size:0.67rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--sub);font-weight:700;border-bottom:2px solid var(--border);}
+tbody tr{border-bottom:1px solid var(--border);transition:background 0.1s;}
+tbody tr:hover{background:#f9fafb;}
+tbody td{padding:10px 14px;font-weight:600;vertical-align:middle;}
+.badge{display:inline-block;padding:3px 10px;border-radius:99px;font-size:0.68rem;font-weight:800;}
+.badge-green{background:var(--green-bg);color:var(--green);}.badge-blue{background:var(--blue-bg);color:var(--blue);}.badge-yellow{background:var(--yellow-bg);color:var(--yellow);}.badge-red{background:var(--red-bg);color:var(--red);}.badge-purple{background:var(--purple-bg);color:var(--purple);}.badge-gray{background:#f3f4f6;color:#6b7280;}.badge-teal{background:var(--teal-bg);color:var(--teal);}
+.grade-chip{display:inline-block;padding:2px 10px;border-radius:6px;font-size:0.7rem;font-weight:800;background:var(--green-bg);color:var(--green);}
+
+/* ── CHART ── */
+.chart-row{display:flex;align-items:center;gap:12px;margin-bottom:13px;}
+.chart-label{width:150px;font-size:0.76rem;font-weight:700;flex-shrink:0;text-align:right;color:var(--text);}
+.chart-bar-bg{flex:1;background:var(--bg);border-radius:99px;height:22px;overflow:hidden;}
+.chart-bar{height:100%;border-radius:99px;transition:width 0.7s cubic-bezier(.34,1.56,.64,1);display:flex;align-items:center;padding-left:10px;font-size:0.68rem;font-weight:800;color:white;white-space:nowrap;}
+.chart-val{width:55px;font-size:0.76rem;font-weight:800;flex-shrink:0;text-align:right;}
+.chart-bar.green{background:linear-gradient(90deg,var(--green),var(--green-l));}.chart-bar.blue{background:linear-gradient(90deg,var(--blue),var(--blue-l));}.chart-bar.yellow{background:linear-gradient(90deg,var(--yellow),var(--yellow-l));}.chart-bar.red{background:linear-gradient(90deg,var(--red),var(--red-l));}
+.weekly-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:6px;align-items:end;height:130px;}
+.week-col{display:flex;flex-direction:column;align-items:center;height:100%;}
+.week-bars{display:flex;gap:2px;align-items:end;flex:1;width:100%;}
+.week-bar{flex:1;border-radius:3px 3px 0 0;min-height:3px;transition:height 0.5s ease;}
+.week-bar.green{background:var(--green-l);}.week-bar.blue{background:var(--blue-l);}.week-bar.yellow{background:var(--yellow-l);}.week-bar.red{background:var(--red-l);}
+
+/* ── SECTION MGMT CARDS ── */
+.section-list{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;}
+@media(max-width:900px){.section-list{grid-template-columns:repeat(2,1fr);}}
+.sl-card{background:var(--bg);border-radius:14px;padding:16px;border:1.5px solid var(--border);display:flex;flex-direction:column;gap:6px;transition:box-shadow 0.18s,border-color 0.18s;}
+.sl-card:hover{box-shadow:0 4px 16px rgba(0,0,0,0.1);border-color:var(--green-l);}
+.sl-card-top{display:flex;justify-content:space-between;align-items:flex-start;}
+.sl-card-name{font-family:'Baloo 2',cursive;font-size:1rem;font-weight:800;color:var(--text);}
+.sl-card-actions{display:flex;gap:6px;margin-top:4px;}
+
+/* ══════════════════════════════════════
+   INSPECTION CHECKLIST STYLES
+══════════════════════════════════════ */
+
+/* Score ring */
+.score-ring-wrap{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;}
+.score-ring{position:relative;width:110px;height:110px;}
+.score-ring svg{transform:rotate(-90deg);}
+.score-ring-bg{fill:none;stroke:#e0e0e0;stroke-width:9;}
+.score-ring-fill{fill:none;stroke-width:9;stroke-linecap:round;transition:stroke-dashoffset 0.8s cubic-bezier(.34,1.56,.64,1),stroke 0.4s;}
+.score-ring-text{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+.score-ring-pct{font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;line-height:1;}
+.score-ring-label{font-size:0.6rem;font-weight:800;text-transform:uppercase;letter-spacing:0.08em;color:var(--sub);}
+.score-ring-tag{font-size:0.75rem;font-weight:800;padding:3px 12px;border-radius:99px;}
+
+/* Checklist group */
+.cl-group{margin-bottom:22px;}
+.cl-group-title{font-family:'Baloo 2',cursive;font-size:0.95rem;font-weight:800;margin-bottom:12px;display:flex;align-items:center;gap:8px;padding-bottom:8px;border-bottom:2px solid var(--border);}
+.cl-items{display:flex;flex-direction:column;gap:8px;}
+
+/* Individual checklist item */
+.cl-item{
+  display:flex;align-items:center;gap:12px;
+  background:var(--bg);border-radius:12px;padding:12px 14px;
+  border:1.5px solid var(--border);
+  transition:border-color 0.15s,background 0.15s;
+  cursor:pointer;user-select:none;
+}
+.cl-item:hover{border-color:#bbb;}
+.cl-item.pass{background:var(--green-bg);border-color:var(--green-l);}
+.cl-item.fail{background:var(--red-bg);border-color:var(--red-l);}
+.cl-item.na{background:#f8f8f8;border-color:#ddd;opacity:0.6;}
+
+.cl-toggle{display:flex;gap:4px;flex-shrink:0;}
+.cl-btn{
+  width:34px;height:34px;border-radius:8px;border:1.5px solid var(--border);
+  background:white;font-size:1rem;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  transition:all 0.15s;font-family:'Nunito',sans-serif;
+}
+.cl-btn:hover{transform:scale(1.1);}
+.cl-btn.pass-active{background:var(--green);border-color:var(--green);box-shadow:0 2px 8px rgba(46,125,50,0.4);}
+.cl-btn.fail-active{background:var(--red);border-color:var(--red);box-shadow:0 2px 8px rgba(198,40,40,0.4);}
+.cl-btn.na-active{background:#9e9e9e;border-color:#9e9e9e;}
+
+.cl-text{flex:1;}
+.cl-text strong{display:block;font-size:0.86rem;font-weight:800;color:var(--text);}
+.cl-text span{font-size:0.72rem;color:var(--sub);font-weight:600;}
+.cl-status-label{font-size:0.7rem;font-weight:800;padding:2px 10px;border-radius:99px;flex-shrink:0;}
+.pass .cl-status-label{background:var(--green);color:white;}
+.fail .cl-status-label{background:var(--red);color:white;}
+.na .cl-status-label{background:#9e9e9e;color:white;}
+
+/* Remarks per item */
+.cl-remark{
+  display:none;margin-top:6px;
+  border-top:1px dashed var(--border);padding-top:8px;
+}
+.cl-item.fail .cl-remark,.cl-item.pass .cl-remark{display:block;}
+.cl-remark input{width:100%;border:1px solid var(--border);border-radius:8px;padding:6px 10px;font-family:'Nunito',sans-serif;font-size:0.78rem;outline:none;background:white;}
+.cl-remark input:focus{border-color:var(--green);}
+
+/* Progress bar inside group header */
+.cl-group-progress{display:flex;align-items:center;gap:8px;margin-left:auto;}
+.cl-group-score{font-size:0.72rem;font-weight:800;color:var(--sub);}
+.cl-mini-bar{width:60px;height:6px;background:#e0e0e0;border-radius:99px;overflow:hidden;}
+.cl-mini-fill{height:100%;border-radius:99px;transition:width 0.4s;}
+
+/* Inspection result banner */
+.result-banner{
+  border-radius:16px;padding:20px 24px;
+  display:flex;align-items:center;gap:20px;
+  margin-bottom:20px;
+}
+.result-banner.compliant{background:linear-gradient(135deg,var(--green-d),var(--green));color:white;}
+.result-banner.needs-improvement{background:linear-gradient(135deg,#e65100,#ff8a65);color:white;}
+.result-banner.non-compliant{background:linear-gradient(135deg,var(--red),#ef5350);color:white;}
+.result-banner .rb-icon{font-size:2.8rem;flex-shrink:0;}
+.result-banner .rb-title{font-family:'Baloo 2',cursive;font-size:1.3rem;font-weight:800;}
+.result-banner .rb-sub{font-size:0.8rem;opacity:0.9;margin-top:2px;}
+.result-banner .rb-score{font-family:'Baloo 2',cursive;font-size:2.2rem;font-weight:800;margin-left:auto;flex-shrink:0;text-align:right;}
+.result-banner .rb-score-label{font-size:0.65rem;opacity:0.8;text-align:right;}
+
+/* Inspection log table status */
+.insp-pass{color:var(--green);font-weight:800;}
+.insp-ni{color:var(--orange);font-weight:800;}
+.insp-fail{color:var(--red);font-weight:800;}
+
+/* ── MODAL ── */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:200;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity 0.2s;}
+.overlay.show{opacity:1;pointer-events:all;}
+.modal{background:white;border-radius:20px;width:92%;max-width:500px;padding:28px;box-shadow:0 20px 60px rgba(0,0,0,0.22);transform:scale(0.95);transition:transform 0.22s cubic-bezier(.34,1.56,.64,1);max-height:90vh;overflow-y:auto;}
+.overlay.show .modal{transform:scale(1);}
+.modal h3{font-family:'Baloo 2',cursive;font-size:1.2rem;font-weight:800;margin-bottom:18px;display:flex;align-items:center;gap:8px;}
+.modal-form{display:flex;flex-direction:column;gap:14px;}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:20px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;}
+
+/* ── EMPTY ── */
+.empty{text-align:center;padding:40px 20px;color:var(--sub);}
+.empty .ei{font-size:3rem;margin-bottom:10px;}
+.empty p{font-size:0.84rem;font-weight:600;}
+
+/* ── TOAST ── */
+.toast{position:fixed;bottom:24px;right:24px;background:var(--green-d);color:white;padding:12px 20px;border-radius:12px;font-weight:800;font-size:0.84rem;box-shadow:0 8px 24px rgba(0,0,0,0.2);display:flex;align-items:center;gap:8px;transform:translateY(80px);opacity:0;transition:all 0.3s cubic-bezier(.34,1.56,.64,1);z-index:999;pointer-events:none;}
+.toast.show{transform:translateY(0);opacity:1;}
+
+/* ── AUTOFILL ── */
+.autofill-hint{font-size:0.68rem;color:var(--green);font-weight:700;margin-top:3px;display:none;}
+.autofill-hint.show{display:block;}
+
+@media print{
+  .sidebar,.topbar,.no-print{display:none!important;}
+  .main{margin-left:0;}
+  .page{display:block!important;padding:10px;}
+  body{background:white;}
+  .tab-content{display:block!important;}
+  .cl-btn{border:1px solid #ccc!important;background:white!important;}
+  .cl-item.pass .cl-btn.pass-active::after{content:'✓';}
+  .cl-item.fail .cl-btn.fail-active::after{content:'✗';}
+}
+</style>
+</head>
+<body>
+<div class="layout">
+
+<!-- ══ SIDEBAR ══ -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="seal">🏫</div>
+    <h2>Waste Segregation<br>Record System</h2>
+    <p>Department of Education – PH</p>
+  </div>
+  <div class="nav-group">Menu</div>
+  <div class="nav-item active" onclick="showPage('dashboard')"><span class="ni">📊</span> Dashboard</div>
+  <div class="nav-item" onclick="showPage('sections')"><span class="ni">🏷️</span> Mga Section</div>
+  <div class="nav-item" onclick="showPage('add')"><span class="ni">📝</span> Mag-record</div>
+  <div class="nav-item" onclick="showPage('records')"><span class="ni">📋</span> Lahat ng Records</div>
+  <div class="nav-item" onclick="showPage('inspections')"><span class="ni">🔍</span> Inspection Logs</div>
+  <div class="nav-item" onclick="showPage('reports')"><span class="ni">📈</span> Ulat / Reports</div>
+  <div class="nav-group">Iba Pa</div>
+  <div class="nav-item no-print" onclick="window.print()"><span class="ni">🖨️</span> I-print</div>
+  <div class="sidebar-footer">RA 9003 – Ecological Solid<br>Waste Management Act<br>DepEd Order No. 13, s. 2017</div>
+</aside>
+
+<!-- ══ MAIN ══ -->
+<div class="main">
+<div class="topbar">
+  <div class="topbar-title" id="pageTitle">📊 Dashboard</div>
+  <div class="date-badge" id="todayDate"></div>
+</div>
+
+<!-- ════ DASHBOARD ════ -->
+<div class="page active" id="page-dashboard">
+  <div class="stat-row" id="statRow"></div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;">
+    <div class="sc">
+      <div class="sc-head"><h3>📅 Lingguhang Basura (kg)</h3><span style="font-size:0.7rem;color:var(--sub);font-weight:600;" id="weekLabel"></span></div>
+      <div class="sc-body">
+        <div style="display:flex;gap:12px;margin-bottom:12px;flex-wrap:wrap;font-size:0.68rem;font-weight:700;">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--green-l);margin-right:3px;"></span>Bio</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--blue-l);margin-right:3px;"></span>Non-Bio</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--yellow-l);margin-right:3px;"></span>Recycle</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:2px;background:var(--red-l);margin-right:3px;"></span>Hazardous</span>
+        </div>
+        <div class="weekly-grid" id="weeklyChart"></div>
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:6px;margin-top:4px;">
+          <div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Lun</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Mar</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Miy</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Huw</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Biy</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Sab</div><div style="text-align:center;font-size:0.6rem;font-weight:800;color:var(--sub);">Lin</div>
+        </div>
+      </div>
+    </div>
+    <div class="sc">
+      <div class="sc-head"><h3>🗑️ Kabuuan per Bin (kg)</h3></div>
+      <div class="sc-body"><div id="binChart"></div></div>
+    </div>
+  </div>
+  <div class="sc" style="margin-top:20px;">
+    <div class="sc-head"><h3>🕐 Pinakabagong Records</h3><button class="btn btn-outline btn-sm no-print" onclick="showPage('records')">Tingnan Lahat →</button></div>
+    <div class="sc-body" style="padding:0;"><div class="tw"><table><thead><tr><th>Petsa</th><th>Grade</th><th>Section</th><th>Adviser</th><th>🟢 Bio</th><th>🔵 Non-Bio</th><th>🟡 Recycle</th><th>🔴 Hazardous</th><th>Kabuuan</th></tr></thead><tbody id="recentBody"></tbody></table></div></div>
+  </div>
+</div>
+
+<!-- ════ SECTIONS ════ -->
+<div class="page" id="page-sections">
+  <div class="sc" style="margin-bottom:20px;">
+    <div class="sc-head"><h3>🏷️ Listahan ng mga Section</h3><button class="btn btn-purple btn-sm no-print" onclick="openSectionModal()">+ Magdagdag ng Section</button></div>
+    <div class="sc-body">
+      <div style="display:flex;gap:10px;margin-bottom:18px;flex-wrap:wrap;" class="no-print">
+        <input type="text" id="secSearch" placeholder="🔍 Hanapin ang section..." oninput="renderSections()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.83rem;outline:none;flex:1;min-width:160px;">
+        <select id="secGradeFilter" onchange="renderSections()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.83rem;outline:none;">
+          <option value="">Lahat ng Grade</option>
+          <option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option>
+        </select>
+      </div>
+      <div class="section-list" id="sectionList"></div>
+      <div id="emptySections" class="empty" style="display:none;"><div class="ei">🏷️</div><p>Wala pang section. Magdagdag na!</p></div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><h3>📊 Section Summary</h3></div>
+    <div class="sc-body" style="padding:0;">
+      <div class="tw"><table><thead><tr><th>Grade</th><th>Section</th><th>Adviser</th><th>🟢 Bio</th><th>🔵 Non-Bio</th><th>🟡 Recycle</th><th>🔴 Hazardous</th><th>Kabuuan</th><th>Inspections</th></tr></thead><tbody id="sectionSummaryBody"></tbody></table></div>
+      <div id="emptySectionSummary" class="empty" style="display:none;"><div class="ei">📊</div><p>Walang datos pa.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ MAG-RECORD ════ -->
+<div class="page" id="page-add">
+
+  <!-- TAB BAR -->
+  <div class="tab-bar no-print">
+    <button class="tab-btn active" id="tab-waste-btn" onclick="switchTab('waste')">⚖️ Waste Record</button>
+    <button class="tab-btn" id="tab-inspect-btn" onclick="switchTab('inspect')">🔍 Inspection Checklist</button>
+  </div>
+
+  <!-- TAB: WASTE RECORD -->
+  <div class="tab-content active" id="tab-waste">
+    <div class="sc">
+      <div class="sc-head"><h3>⚖️ I-record ang Dami ng Basura</h3></div>
+      <div class="sc-body">
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;margin-bottom:14px;">
+          <div class="fg"><label>📅 Petsa *</label><input type="date" id="f_date"></div>
+          <div class="fg"><label>🎓 Grade Level *</label><select id="f_grade" onchange="onGradeChange('f')"><option value="">— Piliin ang Grade —</option></select></div>
+          <div class="fg"><label>🏷️ Section *</label><select id="f_section" onchange="onSectionChange('f')" disabled><option value="">— Piliin ang Section —</option></select></div>
+        </div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:6px;">
+          <div class="fg">
+            <label>👩‍🏫 Adviser</label>
+            <input type="text" id="f_teacher" readonly style="background:#f0f9f0;border-color:var(--green-l);color:var(--green);font-weight:700;" placeholder="Awtomatiko mula sa section data">
+            <div class="autofill-hint" id="f_adviserHint">✅ Auto-filled mula sa section data</div>
+          </div>
+          <div class="fg"><label>📝 Notes (opsyonal)</label><input type="text" id="f_notes" placeholder="e.g. Regular collection, cleanup drive..."></div>
+        </div>
+        <div id="f_sectionInfoBar" style="display:none;background:var(--teal-bg);border-radius:12px;padding:10px 16px;margin:12px 0;font-size:0.78rem;font-weight:700;color:var(--teal);display:none;align-items:center;gap:8px;">
+          <span>ℹ️</span><span id="f_sectionInfoText"></span>
+        </div>
+        <div style="margin:16px 0 8px;font-size:0.7rem;font-weight:800;text-transform:uppercase;letter-spacing:0.1em;color:var(--sub);">Dami ng Basura (kilogram)</div>
+        <div class="bin-inputs">
+          <div class="bic green"><div class="bi">🟢</div><div class="bn">Biodegradable</div><input type="number" id="f_green" min="0" step="0.1" placeholder="0.0"><div class="bu">kilogram</div></div>
+          <div class="bic blue"><div class="bi">🔵</div><div class="bn">Non-Biodegradable</div><input type="number" id="f_blue" min="0" step="0.1" placeholder="0.0"><div class="bu">kilogram</div></div>
+          <div class="bic yellow"><div class="bi">🟡</div><div class="bn">Recyclable</div><input type="number" id="f_yellow" min="0" step="0.1" placeholder="0.0"><div class="bu">kilogram</div></div>
+          <div class="bic red"><div class="bi">🔴</div><div class="bn">Hazardous</div><input type="number" id="f_red" min="0" step="0.1" placeholder="0.0"><div class="bu">kilogram</div></div>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px;" class="no-print">
+          <button class="btn btn-primary" onclick="saveRecord()">💾 I-save ang Record</button>
+          <button class="btn btn-outline" onclick="clearForm()">🗑️ I-clear</button>
+        </div>
+      </div>
+    </div>
+    <div class="sc" id="addSummary" style="display:none;">
+      <div class="sc-head"><h3>✅ Na-save na!</h3></div>
+      <div class="sc-body" id="addSummaryBody"></div>
+    </div>
+  </div>
+
+  <!-- TAB: INSPECTION CHECKLIST -->
+  <div class="tab-content" id="tab-inspect">
+    <div class="sc">
+      <div class="sc-head"><h3>🔍 Inspection Checklist</h3><span style="font-size:0.73rem;color:var(--sub);font-weight:600;">I-check ang bawat aytem. ✅ Compliant | ❌ Non-Compliant</span></div>
+      <div class="sc-body">
+
+        <!-- Section selector -->
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:14px;margin-bottom:20px;padding-bottom:20px;border-bottom:2px solid var(--border);">
+          <div class="fg"><label>📅 Petsa *</label><input type="date" id="i_date"></div>
+          <div class="fg"><label>🎓 Grade Level *</label><select id="i_grade" onchange="onGradeChange('i')"><option value="">— Piliin ang Grade —</option></select></div>
+          <div class="fg"><label>🏷️ Section *</label><select id="i_section" onchange="onSectionChange('i')" disabled><option value="">— Piliin ang Section —</option></select></div>
+          <div class="fg"><label>👩‍🏫 Inspector</label><input type="text" id="i_inspector" placeholder="Pangalan ng guro"></div>
+        </div>
+
+        <div id="i_adviserRow" style="display:none;background:var(--teal-bg);border-radius:12px;padding:10px 16px;margin-bottom:18px;font-size:0.78rem;font-weight:700;color:var(--teal);align-items:center;gap:8px;">
+          <span>🏷️</span><span id="i_sectionInfoText">Piliin ang section.</span>
+        </div>
+
+        <!-- Live Score Header -->
+        <div style="display:flex;align-items:center;gap:24px;background:var(--bg);border-radius:16px;padding:16px 20px;margin-bottom:24px;border:1.5px solid var(--border);" id="liveScoreBar">
+          <div class="score-ring-wrap">
+            <div class="score-ring">
+              <svg width="110" height="110" viewBox="0 0 110 110">
+                <circle class="score-ring-bg" cx="55" cy="55" r="46"/>
+                <circle class="score-ring-fill" id="ringFill" cx="55" cy="55" r="46" stroke-dasharray="289" stroke-dashoffset="289" stroke="#66bb6a"/>
+              </svg>
+              <div class="score-ring-text">
+                <div class="score-ring-pct" id="ringPct" style="color:var(--green)">—</div>
+                <div class="score-ring-label">Score</div>
+              </div>
+            </div>
+            <span class="score-ring-tag" id="ringTag" style="background:var(--bg);color:var(--sub);">Pending</span>
+          </div>
+          <div style="flex:1;">
+            <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;" id="scoreSummaryGrid">
+              <div style="text-align:center;padding:10px;background:var(--green-bg);border-radius:10px;">
+                <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:var(--green);" id="passCount">0</div>
+                <div style="font-size:0.65rem;font-weight:700;color:var(--sub);">✅ PASS</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--red-bg);border-radius:10px;">
+                <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:var(--red);" id="failCount">0</div>
+                <div style="font-size:0.65rem;font-weight:700;color:var(--sub);">❌ FAIL</div>
+              </div>
+              <div style="text-align:center;padding:10px;background:var(--bg);border-radius:10px;border:1.5px solid var(--border);">
+                <div style="font-family:'Baloo 2',cursive;font-size:1.5rem;font-weight:800;color:var(--sub);" id="naCount">0</div>
+                <div style="font-size:0.65rem;font-weight:700;color:var(--sub);">— N/A</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- CHECKLIST GROUPS -->
+        <div id="checklistBody"></div>
+
+        <!-- Overall Remarks -->
+        <div class="fg" style="margin-top:20px;">
+          <label>📝 Pangkalahatang Remarks ng Inspector</label>
+          <textarea id="i_remarks" rows="3" placeholder="Ilagay ang mga obserbasyon, rekomendasyon, o iba pang tala..."></textarea>
+        </div>
+
+        <div style="display:flex;gap:10px;margin-top:20px;" class="no-print">
+          <button class="btn btn-teal" onclick="saveInspection()">💾 I-save ang Inspection</button>
+          <button class="btn btn-outline" onclick="resetChecklist()">🔄 I-reset</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Result after save -->
+    <div id="inspectResult" style="display:none;">
+      <div id="resultBanner" class="result-banner compliant">
+        <div class="rb-icon" id="resultIcon">✅</div>
+        <div>
+          <div class="rb-title" id="resultTitle">Compliant</div>
+          <div class="rb-sub" id="resultSub"></div>
+        </div>
+        <div style="margin-left:auto;text-align:right;">
+          <div class="rb-score" id="resultScore">100%</div>
+          <div class="rb-score-label">Compliance Rate</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ ALL RECORDS ════ -->
+<div class="page" id="page-records">
+  <div class="sc" style="margin-bottom:16px;">
+    <div class="sc-body" style="padding:14px 20px;">
+      <div style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+        <input type="text" id="searchInput" placeholder="🔍 Hanapin..." oninput="renderRecords()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;flex:1;min-width:180px;">
+        <select id="filterGrade" onchange="renderRecords()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;"><option value="">Lahat ng Grade</option></select>
+        <select id="filterMonth" onchange="renderRecords()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;"><option value="">Lahat ng Buwan</option></select>
+        <button class="btn btn-primary btn-sm no-print" onclick="exportCSV()">⬇️ Export CSV</button>
+      </div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><h3>📋 Lahat ng Records</h3><span style="font-size:0.76rem;color:var(--sub);font-weight:600;" id="recordCount"></span></div>
+    <div class="sc-body" style="padding:0;">
+      <div class="tw"><table><thead><tr><th>Petsa</th><th>Grade</th><th>Section</th><th>Adviser</th><th>🟢 Bio</th><th>🔵 Non-Bio</th><th>🟡 Recycle</th><th>🔴 Hazardous</th><th>Kabuuan</th><th class="no-print">Aksyon</th></tr></thead><tbody id="recordsBody"></tbody></table></div>
+      <div id="emptyRecords" class="empty" style="display:none;"><div class="ei">📭</div><p>Walang records. Mag-record na!</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ INSPECTION LOGS ════ -->
+<div class="page" id="page-inspections">
+  <div class="sc" style="margin-bottom:16px;">
+    <div class="sc-body" style="padding:14px 20px;">
+      <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <input type="text" id="inspSearch" placeholder="🔍 Hanapin (section, inspector...)" oninput="renderInspectionLogs()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;flex:1;min-width:180px;">
+        <select id="inspGradeFilter" onchange="renderInspectionLogs()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;"><option value="">Lahat ng Grade</option></select>
+        <select id="inspResultFilter" onchange="renderInspectionLogs()" style="border:1.5px solid var(--border);border-radius:10px;padding:8px 13px;font-family:'Nunito',sans-serif;font-size:0.84rem;outline:none;">
+          <option value="">Lahat ng Result</option>
+          <option value="Compliant">✅ Compliant</option>
+          <option value="Needs Improvement">⚠️ Needs Improvement</option>
+          <option value="Non-Compliant">❌ Non-Compliant</option>
+        </select>
+        <button class="btn btn-primary btn-sm no-print" onclick="exportInspCSV()">⬇️ Export CSV</button>
+      </div>
+    </div>
+  </div>
+  <div class="sc">
+    <div class="sc-head"><h3>🔍 Inspection Logs</h3><span id="inspCount" style="font-size:0.76rem;color:var(--sub);font-weight:600;"></span></div>
+    <div class="sc-body" style="padding:0;">
+      <div class="tw"><table><thead><tr><th>Petsa</th><th>Grade</th><th>Section</th><th>Inspector</th><th>Score</th><th>Pass</th><th>Fail</th><th>Result</th><th class="no-print">Aksyon</th></tr></thead><tbody id="inspBody"></tbody></table></div>
+      <div id="emptyInsp" class="empty" style="display:none;"><div class="ei">🔍</div><p>Walang inspection logs pa.</p></div>
+    </div>
+  </div>
+</div>
+
+<!-- ════ REPORTS ════ -->
+<div class="page" id="page-reports">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="sc"><div class="sc-head"><h3>📊 Buwanang Basura</h3></div><div class="sc-body"><div id="monthlyChart"></div></div></div>
+    <div class="sc"><div class="sc-head"><h3>🏆 Top Sections (Dami ng Basura)</h3></div><div class="sc-body"><div id="topSections"></div></div></div>
+  </div>
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px;margin-bottom:20px;">
+    <div class="sc"><div class="sc-head"><h3>🔍 Compliance Rate per Section</h3></div><div class="sc-body"><div id="complianceChart"></div></div></div>
+    <div class="sc"><div class="sc-head"><h3>❌ Madalas na Hindi Pumasa</h3></div><div class="sc-body"><div id="failItems"></div></div></div>
+  </div>
+  <div class="sc"><div class="sc-head"><h3>📋 Summary</h3></div><div class="sc-body"><div id="summaryStats"></div></div></div>
+</div>
+
+</div><!-- /main -->
+</div><!-- /layout -->
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<!-- SECTION MODAL -->
+<div class="overlay" id="sectionModal">
+  <div class="modal">
+    <h3 id="sectionModalTitle">🏷️ Bagong Section</h3>
+    <div class="modal-form">
+      <div class="modal-grid">
+        <div class="fg"><label>🎓 Grade Level *</label><select id="sm_grade"><option value="">— Piliin —</option><option>Grade 7</option><option>Grade 8</option><option>Grade 9</option><option>Grade 10</option><option>Grade 11</option><option>Grade 12</option></select></div>
+        <div class="fg"><label>🏷️ Pangalan ng Section *</label><input type="text" id="sm_name" placeholder="e.g. Narra, Sampaguita..."></div>
+      </div>
+      <div class="fg"><label>👩‍🏫 Pangalan ng Adviser *</label><input type="text" id="sm_adviser" placeholder="e.g. G. Maria Santos"></div>
+      <div class="fg"><label>📝 Remarks (opsyonal)</label><input type="text" id="sm_remarks" placeholder="e.g. Regular class, Science class..."></div>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-outline" onclick="closeModal('sectionModal')">Kanselahin</button>
+      <button class="btn btn-purple" onclick="saveSection()">💾 I-save</button>
+    </div>
+  </div>
+</div>
+
+<!-- VIEW INSPECTION MODAL -->
+<div class="overlay" id="viewInspModal">
+  <div class="modal" style="max-width:680px;">
+    <h3>🔍 Inspection Details</h3>
+    <div id="viewInspBody"></div>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('viewInspModal')">Isara</button></div>
+  </div>
+</div>
+
+<!-- DELETE MODALS -->
+<div class="overlay" id="deleteModal">
+  <div class="modal">
+    <h3>🗑️ I-delete ang Record?</h3>
+    <p style="font-size:0.84rem;color:var(--sub);">Hindi na mababawi ito.</p>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('deleteModal')">Kanselahin</button><button class="btn btn-danger" onclick="confirmDelete()">I-delete</button></div>
+  </div>
+</div>
+<div class="overlay" id="deleteSectionModal">
+  <div class="modal">
+    <h3>🗑️ I-delete ang Section?</h3>
+    <p style="font-size:0.84rem;color:var(--sub);">Mananatili ang mga records ng section na ito.</p>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('deleteSectionModal')">Kanselahin</button><button class="btn btn-danger" onclick="confirmDeleteSection()">I-delete</button></div>
+  </div>
+</div>
+<div class="overlay" id="deleteInspModal">
+  <div class="modal">
+    <h3>🗑️ I-delete ang Inspection Log?</h3>
+    <p style="font-size:0.84rem;color:var(--sub);">Hindi na mababawi ito.</p>
+    <div class="modal-actions"><button class="btn btn-outline" onclick="closeModal('deleteInspModal')">Kanselahin</button><button class="btn btn-danger" onclick="confirmDeleteInsp()">I-delete</button></div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════════
+// DATA
+// ══════════════════════════════════════════════════════════
+const REC_KEY  = 'deped_waste_records_v3';
+const SEC_KEY  = 'deped_sections_v1';
+const INS_KEY  = 'deped_inspections_v1';
+
+let records     = JSON.parse(localStorage.getItem(REC_KEY) || '[]');
+let sections    = JSON.parse(localStorage.getItem(SEC_KEY) || '[]');
+let inspections = JSON.parse(localStorage.getItem(INS_KEY) || '[]');
+
+function saveRecords()     { localStorage.setItem(REC_KEY, JSON.stringify(records)); }
+function saveSections()    { localStorage.setItem(SEC_KEY, JSON.stringify(sections)); }
+function saveInspections() { localStorage.setItem(INS_KEY, JSON.stringify(inspections)); }
+
+// ══════════════════════════════════════════════════════════
+// CHECKLIST DEFINITION
+// ══════════════════════════════════════════════════════════
+const CHECKLIST = [
+  {
+    id:'segregation', title:'🟢🔵🟡🔴 Tamang Paghihiwalay ng Basura', items:[
+      {id:'seg1', text:'Lahat ng biodegradable waste ay nasa GREEN bin',         desc:'Pagkain, prutas, gulay, dahon, at iba pang nabubulok na basura'},
+      {id:'seg2', text:'Lahat ng non-biodegradable ay nasa BLUE bin',           desc:'Plastik, styrofoam, bag, at iba pang hindi nabubulok'},
+      {id:'seg3', text:'Lahat ng recyclable ay nasa YELLOW bin',                desc:'Papel, karton, lata, bote ng salamin, metal, tela'},
+      {id:'seg4', text:'Lahat ng hazardous waste ay nasa RED bin',              desc:'Baterya, gamot, kemikal, bombilya, tinta, pesticide'},
+      {id:'seg5', text:'Walang basura na nakalagay sa maling bin',              desc:'Walang cross-contamination sa pagitan ng mga bin'},
+      {id:'seg6', text:'Ang malalaking basura ay naputol-putol bago itapon',    desc:'Para makatipid ng espasyo sa bin'},
+    ]
+  },
+  {
+    id:'cleanliness', title:'🧹 Kalinisan ng Paligid ng Basurahan', items:[
+      {id:'cln1', text:'Walang basura sa paligid o sa sahig ng bin area',       desc:'Ang lugar ay malinis at walang nakakalat na basura'},
+      {id:'cln2', text:'Walang masamang amoy sa paligid ng mga basurahan',      desc:'Lalong-lalo na para sa biodegradable at hazardous bins'},
+      {id:'cln3', text:'Ang basurahan ay hindi napuno at may sapat na espasyo', desc:'Hindi lumalagpas sa 3/4 ng kapasidad ng bin'},
+      {id:'cln4', text:'Ang mga basag o natubuan ng dumi na bag ay pinalitan',  desc:'Ang liner o bag sa loob ng bin ay bago at malinis'},
+      {id:'cln5', text:'Malinis ang daanan papunta at mula sa basurahan',       desc:'Hindi naharang ng ibang gamit o basura ang access'},
+    ]
+  },
+  {
+    id:'bins', title:'🗑️ Kondisyon at Kalinisan ng Bin', items:[
+      {id:'bin1', text:'Ang lahat ng 4 na bin ay naroroon at kumpleto',         desc:'Green, Blue, Yellow, at Red bin – buo at hindi kulang'},
+      {id:'bin2', text:'Ang mga bin ay may tamang label at kulay',              desc:'Malinaw na nakasulat kung anong uri ng basura ang para sa bawat bin'},
+      {id:'bin3', text:'Ang mga bin ay walang punit, butas, o sira',           desc:'Buo ang bin at hindi tumatawid ang basura'},
+      {id:'bin4', text:'Ang mga bin ay may takip o nakalagyan ng cover',        desc:'Lalo na ang biodegradable at hazardous upang iwasan ang amoy at langaw'},
+      {id:'bin5', text:'Malinis ang labas ng bin – walang mantsa o dumi',      desc:'Regular na nililinis ang panlabas ng basurahan'},
+      {id:'bin6', text:'Ang mga bin ay nakalagay sa tamang lugar',             desc:'Accessible, hindi nakaharang sa daan, at may sapat na ventilation'},
+    ]
+  },
+  {
+    id:'weight', title:'⚖️ Timbang at Dokumentasyon ng Basura', items:[
+      {id:'wt1',  text:'Ang basura ay natimbang bago itapon',                   desc:'Ang timbang (kg) ay naitala bago ang koleksyon'},
+      {id:'wt2',  text:'Ang waste record form ay nasagutan ng kumpleto',        desc:'Petsa, section, adviser, at timbang per bin ay nalagay'},
+      {id:'wt3',  text:'Ang dami ng basura ay konsistente sa nakaraang linggo', desc:'Walang malaking pagbaba na maaaring may problema sa segregation'},
+    ]
+  },
+  {
+    id:'practice', title:'🌿 Karagdagang Gawi sa Pamamahala ng Basura', items:[
+      {id:'pr1',  text:'Ang mga estudyante ay aktibong naghihiwalay ng basura',  desc:'Nakita na ang mga bata mismo ay naglalagay ng basura sa tamang bin'},
+      {id:'pr2',  text:'Ang room/area ay may visible na waste segregation guide', desc:'Nakalagay ang chart o poster tungkol sa tamang paghihiwalay'},
+      {id:'pr3',  text:'Walang single-use plastik na itinapon nang buo',        desc:'Ang mga bote, bag, at container ay pinuproseso muna bago itapon'},
+      {id:'pr4',  text:'May itinalagang estudyante/guro na nangasiwa sa basurahan', desc:'May eco-officer o responsible person na nagmamasid'},
+      {id:'pr5',  text:'Ang leftover na pagkain ay naipapasa sa compost o hayop', desc:'Nagiging pataba o pinapakain sa mga hayop ang food waste'},
+    ]
+  }
+];
+
+// Checklist state: { itemId: 'pass' | 'fail' | null, remark: '' }
+let clState = {};
+
+function initClState() {
+  clState = {};
+  CHECKLIST.forEach(g => g.items.forEach(it => { clState[it.id] = {v: null, remark: ''}; }));
+}
+initClState();
+
+// ══════════════════════════════════════════════════════════
+// SEED DEMO DATA
+// ══════════════════════════════════════════════════════════
+function seedSections() {
+  if (sections.length) return;
+  [{grade:'Grade 7',name:'Narra',adviser:'G. Maria Santos',remarks:''},{grade:'Grade 7',name:'Molave',adviser:'G. Jose Reyes',remarks:''},{grade:'Grade 8',name:'Mahogany',adviser:'G. Ana Cruz',remarks:''},{grade:'Grade 8',name:'Acacia',adviser:'G. Pedro Dela Torre',remarks:'Science class'},{grade:'Grade 9',name:'Sampaguita',adviser:'G. Lina Villanueva',remarks:''},{grade:'Grade 9',name:'Ilang-ilang',adviser:'G. Carlos Bautista',remarks:''},{grade:'Grade 10',name:'Mariposa',adviser:'G. Rosa Aquino',remarks:''},]
+  .forEach(d => sections.push({id:Date.now()+Math.random(),...d}));
+  saveSections();
+}
+function seedRecords() {
+  if (records.length) return;
+  const today = new Date();
+  sections.slice(0,5).forEach((s,i)=>{
+    for(let d=0;d<5;d++){const dt=new Date(today);dt.setDate(dt.getDate()-d*3-i);records.push({id:Date.now()-i*100000-d*1000,date:dt.toISOString().slice(0,10),grade:s.grade,section:s.name,teacher:s.adviser,green:+(Math.random()*8+1).toFixed(1),blue:+(Math.random()*6+0.5).toFixed(1),yellow:+(Math.random()*4+0.3).toFixed(1),red:+(Math.random()*1+0.1).toFixed(1),notes:''});}
+  });
+  saveRecords();
+}
+function seedInspections() {
+  if (inspections.length) return;
+  const today = new Date();
+  sections.slice(0,4).forEach((s,i) => {
+    const dt = new Date(today); dt.setDate(dt.getDate()-i*4);
+    const items = {};
+    CHECKLIST.forEach(g => g.items.forEach(it => {
+      items[it.id] = {v: Math.random()>0.25?'pass':'fail', remark:''};
+    }));
+    const pass = Object.values(items).filter(x=>x.v==='pass').length;
+    const total = Object.values(items).length;
+    const pct = Math.round(pass/total*100);
+    inspections.push({id:Date.now()-i*50000, date:dt.toISOString().slice(0,10), grade:s.grade, section:s.name, adviser:s.adviser, inspector:'G. Principal', items, remarks:'Demo inspection.', pass, fail:total-pass, na:0, pct, result:pct>=80?'Compliant':pct>=60?'Needs Improvement':'Non-Compliant'});
+  });
+  saveInspections();
+}
+seedSections(); seedRecords(); seedInspections();
+
+// ══════════════════════════════════════════════════════════
+// NAV
+// ══════════════════════════════════════════════════════════
+const titles = {dashboard:'📊 Dashboard',sections:'🏷️ Mga Section',add:'📝 Mag-record',records:'📋 Lahat ng Records',inspections:'🔍 Inspection Logs',reports:'📈 Ulat / Reports'};
+function showPage(id) {
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n=>n.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(n=>{if(n.getAttribute('onclick')&&n.getAttribute('onclick').includes("'"+id+"'"))n.classList.add('active');});
+  document.getElementById('pageTitle').textContent = titles[id]||'';
+  if(id==='dashboard') renderDashboard();
+  if(id==='sections')  {renderSections();renderSectionSummary();}
+  if(id==='add')       {populateGradeDropdown('f');populateGradeDropdown('i');buildChecklist();}
+  if(id==='records')   renderRecords();
+  if(id==='inspections') renderInspectionLogs();
+  if(id==='reports')   renderReports();
+}
+
+// ══════════════════════════════════════════════════════════
+// TABS (inside Mag-record)
+// ══════════════════════════════════════════════════════════
+function switchTab(t) {
+  ['waste','inspect'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',x===t);
+    document.getElementById('tab-'+x+'-btn').classList.toggle('active',x===t);
+  });
+}
+
+// ══════════════════════════════════════════════════════════
+// DATE
+// ══════════════════════════════════════════════════════════
+function fmtDate(iso){const d=new Date(iso+'T00:00:00');return d.toLocaleDateString('fil-PH',{year:'numeric',month:'short',day:'numeric'});}
+const today=new Date();
+document.getElementById('todayDate').textContent=today.toLocaleDateString('fil-PH',{weekday:'short',year:'numeric',month:'short',day:'numeric'});
+document.getElementById('f_date').value=today.toISOString().slice(0,10);
+document.getElementById('i_date').value=today.toISOString().slice(0,10);
+
+// ══════════════════════════════════════════════════════════
+// SHARED GRADE/SECTION DROPDOWN LOGIC  (prefix = 'f' or 'i')
+// ══════════════════════════════════════════════════════════
+function populateGradeDropdown(pfx) {
+  const grades=[...new Set(sections.map(s=>s.grade))].sort();
+  const sel=document.getElementById(pfx+'_grade');
+  const prev=sel.value;
+  sel.innerHTML='<option value="">— Piliin ang Grade —</option>'+grades.map(g=>`<option${g===prev?' selected':''}>${g}</option>`).join('');
+}
+
+function onGradeChange(pfx) {
+  const grade=document.getElementById(pfx+'_grade').value;
+  const secSel=document.getElementById(pfx+'_section');
+  if(pfx==='f'){document.getElementById('f_teacher').value='';document.getElementById('f_adviserHint').classList.remove('show');document.getElementById('f_sectionInfoBar').style.display='none';}
+  else{document.getElementById('i_adviserRow').style.display='none';}
+  if(!grade){secSel.innerHTML='<option value="">— Piliin ang Section —</option>';secSel.disabled=true;return;}
+  const secs=sections.filter(s=>s.grade===grade).sort((a,b)=>a.name.localeCompare(b.name));
+  secSel.innerHTML='<option value="">— Piliin ang Section —</option>'+secs.map(s=>`<option value="${s.name}">${s.name} (${s.adviser})</option>`).join('');
+  secSel.disabled=secs.length===0;
+  if(!secs.length)showToast('⚠️ Walang section sa grade na ito. Magdagdag muna sa Mga Section.');
+}
+
+function onSectionChange(pfx) {
+  const grade=document.getElementById(pfx+'_grade').value;
+  const secName=document.getElementById(pfx+'_section').value;
+  if(!secName){
+    if(pfx==='f'){document.getElementById('f_teacher').value='';document.getElementById('f_adviserHint').classList.remove('show');document.getElementById('f_sectionInfoBar').style.display='none';}
+    else document.getElementById('i_adviserRow').style.display='none';
+    return;
+  }
+  const sec=sections.find(s=>s.grade===grade&&s.name===secName);
+  if(!sec)return;
+  if(pfx==='f'){
+    document.getElementById('f_teacher').value=sec.adviser;
+    document.getElementById('f_adviserHint').classList.add('show');
+    const bar=document.getElementById('f_sectionInfoBar');
+    bar.style.display='flex';
+    document.getElementById('f_sectionInfoText').textContent=`${sec.grade} – ${sec.name} | Adviser: ${sec.adviser}${sec.remarks?' | '+sec.remarks:''}`;
+  } else {
+    const row=document.getElementById('i_adviserRow');
+    row.style.display='flex';
+    document.getElementById('i_sectionInfoText').textContent=`${sec.grade} – ${sec.name} | Adviser: ${sec.adviser}${sec.remarks?' | '+sec.remarks:''}`;
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// BUILD CHECKLIST
+// ══════════════════════════════════════════════════════════
+function buildChecklist() {
+  const body=document.getElementById('checklistBody');
+  body.innerHTML=CHECKLIST.map(g=>`
+    <div class="cl-group" id="grp-${g.id}">
+      <div class="cl-group-title">
+        ${g.title}
+        <div class="cl-group-progress">
+          <div class="cl-mini-bar"><div class="cl-mini-fill green" id="mini-${g.id}" style="width:0%"></div></div>
+          <span class="cl-group-score" id="gscore-${g.id}">0/${g.items.length}</span>
+        </div>
+      </div>
+      <div class="cl-items">
+        ${g.items.map(it=>`
+          <div class="cl-item" id="cli-${it.id}">
+            <div class="cl-toggle">
+              <button class="cl-btn" id="pass-${it.id}" onclick="setCheck('${it.id}','pass')" title="✅ Compliant">✅</button>
+              <button class="cl-btn" id="fail-${it.id}" onclick="setCheck('${it.id}','fail')" title="❌ Non-Compliant">❌</button>
+            </div>
+            <div class="cl-text" style="flex:1;">
+              <strong>${it.text}</strong>
+              <span>${it.desc}</span>
+              <div class="cl-remark">
+                <input type="text" id="rem-${it.id}" placeholder="Remarks / obserbasyon (opsyonal)..." oninput="clState['${it.id}'].remark=this.value">
+              </div>
+            </div>
+            <span class="cl-status-label" id="lbl-${it.id}">—</span>
+          </div>
+        `).join('')}
+      </div>
+    </div>
+  `).join('');
+  updateScoreDisplay();
+}
+
+function setCheck(id, val) {
+  // Toggle off if same
+  if(clState[id].v===val) val=null;
+  clState[id].v=val;
+  const item=document.getElementById('cli-'+id);
+  item.className='cl-item'+(val?' '+val:'');
+  document.getElementById('pass-'+id).className='cl-btn'+(val==='pass'?' pass-active':'');
+  document.getElementById('fail-'+id).className='cl-btn'+(val==='fail'?' fail-active':'');
+  const lbl=document.getElementById('lbl-'+id);
+  if(val==='pass'){lbl.textContent='✅ Compliant';lbl.style.background='var(--green)';}
+  else if(val==='fail'){lbl.textContent='❌ Non-Compliant';lbl.style.background='var(--red)';}
+  else{lbl.textContent='—';lbl.style.background='#e0e0e0';lbl.style.color='var(--sub)';}
+  lbl.style.color=val?'white':'var(--sub)';
+  updateScoreDisplay();
+}
+
+function updateScoreDisplay() {
+  let totalPass=0,totalFail=0,totalNA=0;
+  CHECKLIST.forEach(g=>{
+    let gpass=0;
+    g.items.forEach(it=>{
+      const v=clState[it.id].v;
+      if(v==='pass'){gpass++;totalPass++;}
+      else if(v==='fail')totalFail++;
+      else totalNA++;
+    });
+    const pct=Math.round(gpass/g.items.length*100);
+    const fill=document.getElementById('mini-'+g.id);
+    if(fill){fill.style.width=pct+'%';fill.style.background=pct>=80?'var(--green-l)':pct>=50?'var(--yellow-l)':'var(--red-l)';}
+    const gs=document.getElementById('gscore-'+g.id);
+    if(gs)gs.textContent=gpass+'/'+g.items.length;
+  });
+  const answered=totalPass+totalFail;
+  const pct=answered>0?Math.round(totalPass/answered*100):0;
+  document.getElementById('passCount').textContent=totalPass;
+  document.getElementById('failCount').textContent=totalFail;
+  document.getElementById('naCount').textContent=totalNA;
+  // Ring
+  const circ=2*Math.PI*46;
+  const fill=document.getElementById('ringFill');
+  const offset=circ-(circ*(answered>0?pct/100:0));
+  fill.style.strokeDashoffset=offset;
+  fill.style.stroke=pct>=80?'var(--green-l)':pct>=60?'var(--yellow-l)':'var(--red-l)';
+  const pctEl=document.getElementById('ringPct');
+  pctEl.textContent=answered>0?pct+'%':'—';
+  pctEl.style.color=pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)';
+  const tag=document.getElementById('ringTag');
+  if(!answered){tag.textContent='Pending';tag.style.background='var(--bg)';tag.style.color='var(--sub)';}
+  else if(pct>=80){tag.textContent='✅ Compliant';tag.style.background='var(--green-bg)';tag.style.color='var(--green)';}
+  else if(pct>=60){tag.textContent='⚠️ Needs Improvement';tag.style.background='var(--yellow-bg)';tag.style.color='var(--yellow)';}
+  else{tag.textContent='❌ Non-Compliant';tag.style.background='var(--red-bg)';tag.style.color='var(--red)';}
+}
+
+function resetChecklist() {
+  initClState();
+  buildChecklist();
+  document.getElementById('i_remarks').value='';
+  document.getElementById('inspectResult').style.display='none';
+  showToast('🔄 Na-reset ang checklist.');
+}
+
+// ══════════════════════════════════════════════════════════
+// SAVE INSPECTION
+// ══════════════════════════════════════════════════════════
+function saveInspection() {
+  const date=document.getElementById('i_date').value;
+  const grade=document.getElementById('i_grade').value;
+  const section=document.getElementById('i_section').value;
+  const inspector=document.getElementById('i_inspector').value.trim();
+  const remarks=document.getElementById('i_remarks').value.trim();
+  if(!date){showToast('❗ Piliin ang petsa.');return;}
+  if(!grade){showToast('❗ Piliin ang Grade Level.');return;}
+  if(!section){showToast('❗ Piliin ang Section.');return;}
+  const answered=Object.values(clState).filter(x=>x.v!==null).length;
+  if(answered===0){showToast('❗ Sagutin muna ang mga checklist items.');return;}
+  const sec=sections.find(s=>s.grade===grade&&s.name===section);
+  const pass=Object.values(clState).filter(x=>x.v==='pass').length;
+  const fail=Object.values(clState).filter(x=>x.v==='fail').length;
+  const na=Object.values(clState).filter(x=>x.v===null).length;
+  const pct=Math.round(pass/(pass+fail||1)*100);
+  const result=pct>=80?'Compliant':pct>=60?'Needs Improvement':'Non-Compliant';
+  const rec={
+    id:Date.now(),date,grade,section,
+    adviser:sec?sec.adviser:'',
+    inspector,items:JSON.parse(JSON.stringify(clState)),
+    remarks,pass,fail,na,pct,result
+  };
+  inspections.unshift(rec);saveInspections();
+  // Show result
+  const res=document.getElementById('inspectResult');
+  const banner=document.getElementById('resultBanner');
+  res.style.display='block';
+  banner.className='result-banner '+(result==='Compliant'?'compliant':result==='Needs Improvement'?'needs-improvement':'non-compliant');
+  document.getElementById('resultIcon').textContent=result==='Compliant'?'✅':result==='Needs Improvement'?'⚠️':'❌';
+  document.getElementById('resultTitle').textContent=result;
+  document.getElementById('resultSub').textContent=`${section} (${grade}) | Inspector: ${inspector||'—'} | Petsa: ${fmtDate(date)}`;
+  document.getElementById('resultScore').textContent=pct+'%';
+  res.scrollIntoView({behavior:'smooth',block:'start'});
+  showToast('✅ Na-save ang inspection!');
+}
+
+// ══════════════════════════════════════════════════════════
+// SAVE WASTE RECORD
+// ══════════════════════════════════════════════════════════
+function saveRecord() {
+  const date=document.getElementById('f_date').value;
+  const grade=document.getElementById('f_grade').value;
+  const section=document.getElementById('f_section').value;
+  const teacher=document.getElementById('f_teacher').value.trim();
+  const green=parseFloat(document.getElementById('f_green').value)||0;
+  const blue=parseFloat(document.getElementById('f_blue').value)||0;
+  const yellow=parseFloat(document.getElementById('f_yellow').value)||0;
+  const red=parseFloat(document.getElementById('f_red').value)||0;
+  const notes=document.getElementById('f_notes').value.trim();
+  if(!date){showToast('❗ Piliin ang petsa.');return;}
+  if(!grade){showToast('❗ Piliin ang Grade Level.');return;}
+  if(!section){showToast('❗ Piliin ang Section.');return;}
+  if(green+blue+yellow+red===0){showToast('❗ Maglagay ng dami ng basura.');return;}
+  const rec={id:Date.now(),date,grade,section,teacher,green,blue,yellow,red,notes};
+  records.unshift(rec);saveRecords();
+  const total=(green+blue+yellow+red).toFixed(1);
+  document.getElementById('addSummaryBody').innerHTML=`
+    <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;">
+      <strong>${fmtDate(date)}</strong><span class="grade-chip">${grade}</span><span style="font-weight:700;">${section}</span>
+      <span style="color:var(--sub);font-size:0.8rem;">👩‍🏫 ${teacher||'—'}</span>
+      <span class="badge badge-green">🟢 ${green.toFixed(1)} kg</span><span class="badge badge-blue">🔵 ${blue.toFixed(1)} kg</span>
+      <span class="badge badge-yellow">🟡 ${yellow.toFixed(1)} kg</span><span class="badge badge-red">🔴 ${red.toFixed(1)} kg</span>
+      <strong>= ${total} kg</strong>
+    </div>${notes?`<div style="margin-top:8px;font-size:0.78rem;color:var(--sub);">📝 ${notes}</div>`:''}`;
+  document.getElementById('addSummary').style.display='block';
+  clearForm();showToast('✅ Na-save ang record!');
+}
+function clearForm(){
+  ['f_grade','f_notes'].forEach(id=>document.getElementById(id).value='');
+  ['f_green','f_blue','f_yellow','f_red'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('f_section').innerHTML='<option value="">— Piliin ang Section —</option>';
+  document.getElementById('f_section').disabled=true;
+  document.getElementById('f_teacher').value='';
+  document.getElementById('f_date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('f_adviserHint').classList.remove('show');
+  document.getElementById('f_sectionInfoBar').style.display='none';
+}
+
+// ══════════════════════════════════════════════════════════
+// DASHBOARD
+// ══════════════════════════════════════════════════════════
+function renderDashboard(){
+  let t={green:0,blue:0,yellow:0,red:0};
+  records.forEach(r=>{t.green+=r.green;t.blue+=r.blue;t.yellow+=r.yellow;t.red+=r.red;});
+  const compRate=inspections.length?Math.round(inspections.filter(x=>x.result==='Compliant').length/inspections.length*100):0;
+  document.getElementById('statRow').innerHTML=`
+    <div class="stat-card green"><div class="stat-top"><div class="stat-label">🟢 Biodegradable</div><div class="stat-icon">🌿</div></div><div class="stat-val">${t.green.toFixed(1)}</div><div class="stat-unit">kilogram total</div></div>
+    <div class="stat-card blue"><div class="stat-top"><div class="stat-label">🔵 Non-Biodegradable</div><div class="stat-icon">🛍️</div></div><div class="stat-val">${t.blue.toFixed(1)}</div><div class="stat-unit">kilogram total</div></div>
+    <div class="stat-card yellow"><div class="stat-top"><div class="stat-label">🟡 Recyclable</div><div class="stat-icon">♻️</div></div><div class="stat-val">${t.yellow.toFixed(1)}</div><div class="stat-unit">kilogram total</div></div>
+    <div class="stat-card teal"><div class="stat-top"><div class="stat-label">🔍 Compliance Rate</div><div class="stat-icon">📋</div></div><div class="stat-val">${compRate}%</div><div class="stat-unit">${inspections.length} inspections</div></div>`;
+  const days=[];for(let i=6;i>=0;i--){const d=new Date(today);d.setDate(d.getDate()-i);days.push(d.toISOString().slice(0,10));}
+  document.getElementById('weekLabel').textContent=fmtDate(days[0])+' – '+fmtDate(days[6]);
+  const maxV=Math.max(...days.map(day=>{const dr=records.filter(r=>r.date===day);return dr.reduce((s,r)=>s+r.green+r.blue+r.yellow+r.red,0);}),0.1);
+  document.getElementById('weeklyChart').innerHTML=days.map(day=>{
+    const dr=records.filter(r=>r.date===day);
+    const g=dr.reduce((s,r)=>s+r.green,0),b=dr.reduce((s,r)=>s+r.blue,0),y=dr.reduce((s,r)=>s+r.yellow,0),rd=dr.reduce((s,r)=>s+r.red,0);
+    const sc=p=>Math.round((p/maxV)*110);
+    return`<div class="week-col"><div class="week-bars"><div class="week-bar green" style="height:${sc(g)}px"></div><div class="week-bar blue" style="height:${sc(b)}px"></div><div class="week-bar yellow" style="height:${sc(y)}px"></div><div class="week-bar red" style="height:${sc(rd)}px"></div></div></div>`;
+  }).join('');
+  const grand=t.green+t.blue+t.yellow+t.red||1;
+  document.getElementById('binChart').innerHTML=[{label:'🟢 Biodegradable',val:t.green,cls:'green'},{label:'🔵 Non-Biodegradable',val:t.blue,cls:'blue'},{label:'🟡 Recyclable',val:t.yellow,cls:'yellow'},{label:'🔴 Hazardous',val:t.red,cls:'red'}].map(({label,val,cls})=>`<div class="chart-row"><div class="chart-label">${label}</div><div class="chart-bar-bg"><div class="chart-bar ${cls}" style="width:${Math.round(val/grand*100)}%">${val>0.5?val.toFixed(1)+'kg':''}</div></div><div class="chart-val">${val.toFixed(1)}<span style="font-size:0.6rem;color:var(--sub);">kg</span></div></div>`).join('');
+  const recent=[...records].sort((a,b)=>b.date.localeCompare(a.date)).slice(0,5);
+  document.getElementById('recentBody').innerHTML=recent.length===0?`<tr><td colspan="9" style="text-align:center;padding:24px;color:var(--sub);">Walang records pa.</td></tr>`:recent.map(r=>{const total=(r.green+r.blue+r.yellow+r.red).toFixed(1);return`<tr><td><strong>${fmtDate(r.date)}</strong></td><td><span class="grade-chip">${r.grade||'—'}</span></td><td>${r.section||'—'}</td><td>${r.teacher||'—'}</td><td><span class="badge badge-green">${r.green.toFixed(1)}</span></td><td><span class="badge badge-blue">${r.blue.toFixed(1)}</span></td><td><span class="badge badge-yellow">${r.yellow.toFixed(1)}</span></td><td><span class="badge badge-red">${r.red.toFixed(1)}</span></td><td><strong>${total} kg</strong></td></tr>`;}).join('');
+}
+
+// ══════════════════════════════════════════════════════════
+// SECTIONS
+// ══════════════════════════════════════════════════════════
+let editSectionId=null,deleteSectionId=null;
+function renderSections(){
+  const q=(document.getElementById('secSearch').value||'').toLowerCase();
+  const gf=document.getElementById('secGradeFilter').value;
+  let filtered=sections.filter(s=>(!q||s.name.toLowerCase().includes(q)||s.adviser.toLowerCase().includes(q)||s.grade.toLowerCase().includes(q))&&(!gf||s.grade===gf)).sort((a,b)=>a.grade.localeCompare(b.grade)||a.name.localeCompare(b.name));
+  const list=document.getElementById('sectionList'),empty=document.getElementById('emptySections');
+  if(!filtered.length){list.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  list.innerHTML=filtered.map(s=>{
+    const recs=records.filter(r=>r.section===s.name&&r.grade===s.grade).length;
+    const insp=inspections.filter(x=>x.section===s.name&&x.grade===s.grade).length;
+    return`<div class="sl-card"><div class="sl-card-top"><div class="sl-card-name">${s.name}</div><span style="font-size:0.68rem;font-weight:800;padding:2px 9px;border-radius:6px;background:var(--green-bg);color:var(--green);">${s.grade}</span></div><div style="font-size:0.78rem;color:var(--sub);font-weight:600;">👩‍🏫 ${s.adviser}</div>${s.remarks?`<div style="font-size:0.7rem;color:var(--sub);font-style:italic;">📌 ${s.remarks}</div>`:''}<div style="font-size:0.7rem;color:var(--sub);font-weight:700;display:flex;gap:12px;margin-top:2px;"><span>📋 ${recs} records</span><span>🔍 ${insp} inspections</span></div><div class="sl-card-actions no-print"><button class="btn btn-edit btn-sm" onclick="openEditSection('${s.id}')">✏️ Edit</button><button class="btn btn-danger btn-sm" onclick="openDeleteSection('${s.id}')">🗑️ Delete</button></div></div>`;
+  }).join('');
+}
+function renderSectionSummary(){
+  const body=document.getElementById('sectionSummaryBody'),empty=document.getElementById('emptySectionSummary');
+  const sorted=[...sections].sort((a,b)=>a.grade.localeCompare(b.grade)||a.name.localeCompare(b.name));
+  if(!sorted.length){body.innerHTML='';empty.style.display='block';return;}
+  empty.style.display='none';
+  body.innerHTML=sorted.map(s=>{
+    const recs=records.filter(r=>r.section===s.name&&r.grade===s.grade);
+    const g=recs.reduce((x,r)=>x+r.green,0),b=recs.reduce((x,r)=>x+r.blue,0),y=recs.reduce((x,r)=>x+r.yellow,0),rd=recs.reduce((x,r)=>x+r.red,0);
+    const insp=inspections.filter(x=>x.section===s.name&&x.grade===s.grade);
+    const compPct=insp.length?Math.round(insp.filter(x=>x.result==='Compliant').length/insp.length*100):null;
+    return`<tr><td><span class="grade-chip">${s.grade}</span></td><td><strong>${s.name}</strong></td><td>${s.adviser}</td><td><span class="badge badge-green">${g.toFixed(1)}</span></td><td><span class="badge badge-blue">${b.toFixed(1)}</span></td><td><span class="badge badge-yellow">${y.toFixed(1)}</span></td><td><span class="badge badge-red">${rd.toFixed(1)}</span></td><td><strong>${(g+b+y+rd).toFixed(1)} kg</strong></td><td>${insp.length?`<span class="badge badge-teal">${compPct}% (${insp.length}x)</span>`:'<span class="badge badge-gray">—</span>'}</td></tr>`;
+  }).join('');
+}
+function openSectionModal(){editSectionId=null;document.getElementById('sectionModalTitle').textContent='🏷️ Bagong Section';['sm_grade','sm_name','sm_adviser','sm_remarks'].forEach(id=>document.getElementById(id).value='');document.getElementById('sectionModal').classList.add('show');}
+function openEditSection(id){const s=sections.find(x=>x.id==id);if(!s)return;editSectionId=id;document.getElementById('sectionModalTitle').textContent='✏️ I-edit ang Section';document.getElementById('sm_grade').value=s.grade;document.getElementById('sm_name').value=s.name;document.getElementById('sm_adviser').value=s.adviser;document.getElementById('sm_remarks').value=s.remarks||'';document.getElementById('sectionModal').classList.add('show');}
+function saveSection(){
+  const grade=document.getElementById('sm_grade').value.trim(),name=document.getElementById('sm_name').value.trim(),adviser=document.getElementById('sm_adviser').value.trim(),remarks=document.getElementById('sm_remarks').value.trim();
+  if(!grade){showToast('❗ Piliin ang Grade Level.');return;}if(!name){showToast('❗ Ilagay ang pangalan ng section.');return;}if(!adviser){showToast('❗ Ilagay ang pangalan ng adviser.');return;}
+  if(editSectionId){const idx=sections.findIndex(x=>x.id==editSectionId);if(idx>-1)sections[idx]={...sections[idx],grade,name,adviser,remarks};}
+  else{if(sections.some(s=>s.grade===grade&&s.name.toLowerCase()===name.toLowerCase())){showToast('❗ Mayroon nang ganyang section.');return;}sections.push({id:Date.now(),grade,name,adviser,remarks});}
+  saveSections();closeModal('sectionModal');renderSections();renderSectionSummary();showToast(editSectionId?'✅ Na-update!':'✅ Naidagdag ang section!');
+}
+function openDeleteSection(id){deleteSectionId=id;document.getElementById('deleteSectionModal').classList.add('show');}
+function confirmDeleteSection(){sections=sections.filter(s=>s.id!=deleteSectionId);saveSections();closeModal('deleteSectionModal');renderSections();renderSectionSummary();showToast('🗑️ Na-delete ang section.');}
+
+// ══════════════════════════════════════════════════════════
+// RECORDS PAGE
+// ══════════════════════════════════════════════════════════
+let deleteId=null;
+function renderRecords(){
+  const q=(document.getElementById('searchInput').value||'').toLowerCase();
+  const gf=document.getElementById('filterGrade').value,mf=document.getElementById('filterMonth').value;
+  const grades=[...new Set(records.map(r=>r.grade||''))].filter(Boolean).sort();
+  const gSel=document.getElementById('filterGrade'),gPrev=gSel.value;
+  gSel.innerHTML='<option value="">Lahat ng Grade</option>'+grades.map(g=>`<option>${g}</option>`).join('');gSel.value=gPrev;
+  const months=[...new Set(records.map(r=>r.date.slice(0,7)))].sort().reverse();
+  const mSel=document.getElementById('filterMonth'),mPrev=mSel.value;
+  mSel.innerHTML='<option value="">Lahat ng Buwan</option>'+months.map(m=>{const[yr,mo]=m.split('-');return`<option value="${m}">${new Date(yr,mo-1).toLocaleDateString('fil-PH',{year:'numeric',month:'long'})}</option>`;}).join('');mSel.value=mPrev;
+  let filtered=records.filter(r=>{const sm=!q||r.date.includes(q)||(r.section||'').toLowerCase().includes(q)||(r.teacher||'').toLowerCase().includes(q)||(r.grade||'').toLowerCase().includes(q);return sm&&(!gf||r.grade===gf)&&(!mf||r.date.startsWith(mf));}).sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('recordCount').textContent=`${filtered.length} record${filtered.length!==1?'s':''}`;
+  const body=document.getElementById('recordsBody'),empty=document.getElementById('emptyRecords');
+  if(!filtered.length){body.innerHTML='';empty.style.display='block';return;}empty.style.display='none';
+  body.innerHTML=filtered.map(r=>{const total=(r.green+r.blue+r.yellow+r.red).toFixed(1);return`<tr><td><strong>${fmtDate(r.date)}</strong></td><td><span class="grade-chip">${r.grade||'—'}</span></td><td>${r.section||'—'}</td><td>${r.teacher||'—'}</td><td><span class="badge badge-green">${r.green.toFixed(1)}</span></td><td><span class="badge badge-blue">${r.blue.toFixed(1)}</span></td><td><span class="badge badge-yellow">${r.yellow.toFixed(1)}</span></td><td><span class="badge badge-red">${r.red.toFixed(1)}</span></td><td><strong>${total} kg</strong></td><td class="no-print"><button class="btn btn-danger btn-sm" onclick="openDelete(${r.id})">🗑️</button></td></tr>`;}).join('');
+}
+function openDelete(id){deleteId=id;document.getElementById('deleteModal').classList.add('show');}
+function confirmDelete(){records=records.filter(r=>r.id!==deleteId);saveRecords();closeModal('deleteModal');renderRecords();showToast('🗑️ Na-delete ang record.');}
+
+// ══════════════════════════════════════════════════════════
+// INSPECTION LOGS PAGE
+// ══════════════════════════════════════════════════════════
+let deleteInspId=null;
+function renderInspectionLogs(){
+  const q=(document.getElementById('inspSearch').value||'').toLowerCase();
+  const gf=document.getElementById('inspGradeFilter').value;
+  const rf=document.getElementById('inspResultFilter').value;
+  const grades=[...new Set(inspections.map(x=>x.grade||''))].filter(Boolean).sort();
+  const sel=document.getElementById('inspGradeFilter'),prev=sel.value;
+  sel.innerHTML='<option value="">Lahat ng Grade</option>'+grades.map(g=>`<option>${g}</option>`).join('');sel.value=prev;
+  let filtered=inspections.filter(x=>{
+    const sm=!q||(x.section||'').toLowerCase().includes(q)||(x.inspector||'').toLowerCase().includes(q)||(x.grade||'').toLowerCase().includes(q);
+    return sm&&(!gf||x.grade===gf)&&(!rf||x.result===rf);
+  }).sort((a,b)=>b.date.localeCompare(a.date));
+  document.getElementById('inspCount').textContent=`${filtered.length} inspection${filtered.length!==1?'s':''}`;
+  const body=document.getElementById('inspBody'),empty=document.getElementById('emptyInsp');
+  if(!filtered.length){body.innerHTML='';empty.style.display='block';return;}empty.style.display='none';
+  body.innerHTML=filtered.map(x=>{
+    const cls=x.result==='Compliant'?'insp-pass':x.result==='Needs Improvement'?'insp-ni':'insp-fail';
+    const icon=x.result==='Compliant'?'✅':x.result==='Needs Improvement'?'⚠️':'❌';
+    return`<tr>
+      <td><strong>${fmtDate(x.date)}</strong></td>
+      <td><span class="grade-chip">${x.grade||'—'}</span></td>
+      <td>${x.section||'—'}</td>
+      <td>${x.inspector||'—'}</td>
+      <td><strong>${x.pct}%</strong></td>
+      <td><span class="badge badge-green">${x.pass}</span></td>
+      <td><span class="badge badge-red">${x.fail}</span></td>
+      <td><span class="${cls}">${icon} ${x.result}</span></td>
+      <td class="no-print" style="display:flex;gap:5px;">
+        <button class="btn btn-edit btn-sm" onclick="viewInspection(${x.id})">👁️ View</button>
+        <button class="btn btn-danger btn-sm" onclick="openDeleteInsp(${x.id})">🗑️</button>
+      </td>
+    </tr>`;
+  }).join('');
+}
+function openDeleteInsp(id){deleteInspId=id;document.getElementById('deleteInspModal').classList.add('show');}
+function confirmDeleteInsp(){inspections=inspections.filter(x=>x.id!==deleteInspId);saveInspections();closeModal('deleteInspModal');renderInspectionLogs();showToast('🗑️ Na-delete ang inspection.');}
+
+function viewInspection(id){
+  const x=inspections.find(i=>i.id===id);if(!x)return;
+  const pct=x.pct;
+  const banner=pct>=80?`<div class="result-banner compliant" style="border-radius:12px;margin-bottom:16px;"><div class="rb-icon">✅</div><div><div class="rb-title">Compliant</div><div class="rb-sub">${x.section} (${x.grade}) · ${fmtDate(x.date)}</div></div><div style="margin-left:auto;text-align:right;"><div class="rb-score">${pct}%</div><div class="rb-score-label">Score</div></div></div>`:pct>=60?`<div class="result-banner needs-improvement" style="border-radius:12px;margin-bottom:16px;"><div class="rb-icon">⚠️</div><div><div class="rb-title">Needs Improvement</div><div class="rb-sub">${x.section} (${x.grade}) · ${fmtDate(x.date)}</div></div><div style="margin-left:auto;text-align:right;"><div class="rb-score">${pct}%</div><div class="rb-score-label">Score</div></div></div>`:`<div class="result-banner non-compliant" style="border-radius:12px;margin-bottom:16px;"><div class="rb-icon">❌</div><div><div class="rb-title">Non-Compliant</div><div class="rb-sub">${x.section} (${x.grade}) · ${fmtDate(x.date)}</div></div><div style="margin-left:auto;text-align:right;"><div class="rb-score">${pct}%</div><div class="rb-score-label">Score</div></div></div>`;
+  let detailHtml='';
+  CHECKLIST.forEach(g=>{
+    const rows=g.items.map(it=>{const s=x.items[it.id];if(!s)return'';const v=s.v;const icon=v==='pass'?'✅':v==='fail'?'❌':'—';const color=v==='pass'?'var(--green)':v==='fail'?'var(--red)':'var(--sub)';return`<tr><td style="font-size:0.8rem;padding:6px 8px;">${it.text}</td><td style="text-align:center;font-size:1rem;">${icon}</td><td style="font-size:0.75rem;color:var(--sub);padding:6px 8px;">${s.remark||'—'}</td></tr>`;}).join('');
+    detailHtml+=`<div style="margin-bottom:14px;"><div style="font-family:'Baloo 2',cursive;font-size:0.88rem;font-weight:800;margin-bottom:6px;color:var(--text);">${g.title}</div><table style="width:100%;font-size:0.8rem;border-collapse:collapse;"><thead><tr><th style="text-align:left;padding:5px 8px;background:var(--bg);font-size:0.65rem;color:var(--sub);">Aytem</th><th style="padding:5px 8px;background:var(--bg);font-size:0.65rem;color:var(--sub);">Status</th><th style="text-align:left;padding:5px 8px;background:var(--bg);font-size:0.65rem;color:var(--sub);">Remarks</th></tr></thead><tbody>${rows}</tbody></table></div>`;
+  });
+  document.getElementById('viewInspBody').innerHTML=banner+`<div style="font-size:0.8rem;margin-bottom:12px;color:var(--sub);"><strong>Inspector:</strong> ${x.inspector||'—'} &nbsp;|&nbsp; <strong>Adviser:</strong> ${x.adviser||'—'} &nbsp;|&nbsp; <strong>Pass:</strong> ${x.pass} &nbsp;|&nbsp; <strong>Fail:</strong> ${x.fail}</div>`+detailHtml+(x.remarks?`<div style="background:var(--bg);border-radius:10px;padding:10px 14px;font-size:0.8rem;margin-top:8px;"><strong>📝 Remarks:</strong> ${x.remarks}</div>`:'');
+  document.getElementById('viewInspModal').classList.add('show');
+}
+
+// ══════════════════════════════════════════════════════════
+// REPORTS
+// ══════════════════════════════════════════════════════════
+function renderReports(){
+  const byMonth={};
+  records.forEach(r=>{const m=r.date.slice(0,7);if(!byMonth[m])byMonth[m]={green:0,blue:0,yellow:0,red:0};byMonth[m].green+=r.green;byMonth[m].blue+=r.blue;byMonth[m].yellow+=r.yellow;byMonth[m].red+=r.red;});
+  const mkeys=Object.keys(byMonth).sort();const maxM=Math.max(...mkeys.map(k=>byMonth[k].green+byMonth[k].blue+byMonth[k].yellow+byMonth[k].red),0.1);
+  document.getElementById('monthlyChart').innerHTML=!mkeys.length?'<div class="empty"><div class="ei">📊</div><p>Walang datos.</p></div>':mkeys.map(m=>{const v=byMonth[m];const total=v.green+v.blue+v.yellow+v.red;const[yr,mo]=m.split('-');const label=new Date(yr,mo-1).toLocaleDateString('fil-PH',{month:'short',year:'2-digit'});return`<div class="chart-row"><div class="chart-label">${label}</div><div class="chart-bar-bg"><div class="chart-bar green" style="width:${Math.round(total/maxM*100)}%">${total>0.5?total.toFixed(1)+'kg':''}</div></div><div class="chart-val">${total.toFixed(1)}<span style="font-size:0.6rem;color:var(--sub);">kg</span></div></div>`;}).join('');
+  const byS={};records.forEach(r=>{const k=`${r.grade}|${r.section}`;if(!byS[k])byS[k]=0;byS[k]+=r.green+r.blue+r.yellow+r.red;});
+  const top=Object.entries(byS).sort((a,b)=>b[1]-a[1]).slice(0,6);const maxS=top[0]?top[0][1]:0.1;
+  document.getElementById('topSections').innerHTML=!top.length?'<div class="empty"><div class="ei">🏆</div><p>Walang datos.</p></div>':top.map(([key,val],i)=>{const[grade,sec]=key.split('|');return`<div style="display:flex;align-items:center;gap:10px;margin-bottom:11px;"><div style="width:22px;height:22px;border-radius:50%;background:var(--green-bg);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:0.72rem;font-weight:800;flex-shrink:0;">${i+1}</div><div style="flex:1;"><div style="font-size:0.78rem;font-weight:800;">${sec} <span class="grade-chip" style="font-size:0.6rem;">${grade}</span></div><div style="background:var(--bg);border-radius:99px;height:7px;overflow:hidden;margin-top:3px;"><div style="height:100%;width:${Math.round(val/maxS*100)}%;background:var(--green-l);border-radius:99px;"></div></div></div><div style="font-size:0.76rem;font-weight:800;color:var(--green);width:55px;text-align:right;">${val.toFixed(1)} kg</div></div>`;}).join('');
+  // Compliance per section
+  const secInspMap={};
+  inspections.forEach(x=>{const k=`${x.grade}|${x.section}`;if(!secInspMap[k])secInspMap[k]={pass:0,total:0};secInspMap[k].total++;if(x.result==='Compliant')secInspMap[k].pass++;});
+  const compEntries=Object.entries(secInspMap).sort((a,b)=>b[1].pass/b[1].total-a[1].pass/a[1].total);
+  document.getElementById('complianceChart').innerHTML=!compEntries.length?'<div class="empty"><div class="ei">🔍</div><p>Walang inspection data.</p></div>':compEntries.map(([key,v])=>{const[grade,sec]=key.split('|');const pct=Math.round(v.pass/v.total*100);const color=pct>=80?'var(--green)':pct>=60?'var(--yellow)':'var(--red)';return`<div class="chart-row"><div class="chart-label">${sec} <span style="font-size:0.65rem;font-weight:700;color:var(--sub);">${grade}</span></div><div class="chart-bar-bg"><div class="chart-bar" style="width:${pct}%;background:linear-gradient(90deg,${color},${color}99);color:white;">${pct>=15?pct+'%':''}</div></div><div class="chart-val" style="color:${color};">${pct}%</div></div>`;}).join('');
+  // Most failed items
+  const failCounts={};
+  CHECKLIST.forEach(g=>g.items.forEach(it=>{failCounts[it.id]={text:it.text,count:0};}));
+  inspections.forEach(x=>{Object.entries(x.items||{}).forEach(([id,v])=>{if(v.v==='fail'&&failCounts[id])failCounts[id].count++;});});
+  const topFail=Object.values(failCounts).sort((a,b)=>b.count-a.count).filter(x=>x.count>0).slice(0,6);
+  const maxF=topFail[0]?topFail[0].count:1;
+  document.getElementById('failItems').innerHTML=!topFail.length?'<div class="empty"><div class="ei">✅</div><p>Walang fail items pa.</p></div>':topFail.map(f=>`<div style="margin-bottom:10px;"><div style="font-size:0.76rem;font-weight:700;margin-bottom:3px;">${f.text}</div><div style="display:flex;align-items:center;gap:8px;"><div style="flex:1;background:var(--bg);border-radius:99px;height:8px;overflow:hidden;"><div style="height:100%;width:${Math.round(f.count/maxF*100)}%;background:var(--red-l);border-radius:99px;"></div></div><span style="font-size:0.72rem;font-weight:800;color:var(--red);flex-shrink:0;">${f.count}x</span></div></div>`).join('');
+  const total=records.reduce((s,r)=>s+r.green+r.blue+r.yellow+r.red,0);
+  const compRate=inspections.length?Math.round(inspections.filter(x=>x.result==='Compliant').length/inspections.length*100):0;
+  document.getElementById('summaryStats').innerHTML=`<div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;"><div style="text-align:center;padding:16px;background:var(--green-bg);border-radius:12px;"><div style="font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--green);">${records.length}</div><div style="font-size:0.68rem;color:var(--sub);font-weight:700;">Waste Records</div></div><div style="text-align:center;padding:16px;background:var(--blue-bg);border-radius:12px;"><div style="font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--blue);">${total.toFixed(1)}</div><div style="font-size:0.68rem;color:var(--sub);font-weight:700;">Kabuuang kg</div></div><div style="text-align:center;padding:16px;background:var(--teal-bg);border-radius:12px;"><div style="font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--teal);">${inspections.length}</div><div style="font-size:0.68rem;color:var(--sub);font-weight:700;">Inspections</div></div><div style="text-align:center;padding:16px;background:var(--green-bg);border-radius:12px;"><div style="font-family:'Baloo 2',cursive;font-size:1.8rem;font-weight:800;color:var(--green);">${compRate}%</div><div style="font-size:0.68rem;color:var(--sub);font-weight:700;">Compliance Rate</div></div></div>`;
+}
+
+// ══════════════════════════════════════════════════════════
+// EXPORT
+// ══════════════════════════════════════════════════════════
+function exportCSV(){const rows=[['Petsa','Grade','Section','Adviser','Bio(kg)','NonBio(kg)','Recycle(kg)','Hazardous(kg)','Total(kg)','Notes']];records.forEach(r=>rows.push([r.date,r.grade||'',r.section,r.teacher||'',r.green,r.blue,r.yellow,r.red,(r.green+r.blue+r.yellow+r.red).toFixed(1),r.notes||'']));const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='waste_records_'+new Date().toISOString().slice(0,10)+'.csv';a.click();showToast('⬇️ Na-export na!');}
+function exportInspCSV(){const rows=[['Petsa','Grade','Section','Adviser','Inspector','Pass','Fail','Score(%)','Result','Remarks']];inspections.forEach(x=>rows.push([x.date,x.grade||'',x.section,x.adviser||'',x.inspector||'',x.pass,x.fail,x.pct,x.result,x.remarks||'']));const csv=rows.map(r=>r.map(v=>`"${v}"`).join(',')).join('\n');const a=document.createElement('a');a.href='data:text/csv;charset=utf-8,\uFEFF'+encodeURIComponent(csv);a.download='inspection_logs_'+new Date().toISOString().slice(0,10)+'.csv';a.click();showToast('⬇️ Na-export na ang inspections!');}
+
+// ══════════════════════════════════════════════════════════
+// UTILS
+// ══════════════════════════════════════════════════════════
+function closeModal(id){document.getElementById(id).classList.remove('show');}
+document.querySelectorAll('.overlay').forEach(o=>o.addEventListener('click',e=>{if(e.target===o)o.classList.remove('show');}));
+function showToast(msg){const t=document.getElementById('toast');t.textContent=msg;t.classList.add('show');setTimeout(()=>t.classList.remove('show'),2700);}
+
+// ══════════════════════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════════════════════
+renderDashboard();
+</script>
+</body>
+</html>
